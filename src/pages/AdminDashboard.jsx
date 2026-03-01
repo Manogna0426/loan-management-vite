@@ -1,6 +1,74 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import LandingNavbar from "../components/LandingNavbar.jsx";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 function AdminDashboard() {
+  const [active, setActive] = useState("Overview");
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // remove auth token if stored
+    navigate("/login"); // redirect to login page
+  };
+
+  const stats = [
+    {
+      label: "Total Platform Volume",
+      value: "$12.8M",
+      change: "+14.2% vs last month",
+      positive: true,
+    },
+    {
+      label: "Active Users",
+      value: "2,842",
+      change: "+5.1%",
+      positive: true,
+    },
+    {
+      label: "System Uptime",
+      value: "99.98%",
+      change: "Stable",
+      positive: true,
+    },
+    {
+      label: "Pending Approvals",
+      value: "24",
+      change: "-12%",
+      positive: false,
+    },
+  ];
+
+  const chartData = [
+    { name: "Jan", loans: 12 },
+    { name: "Feb", loans: 19 },
+    { name: "Mar", loans: 8 },
+    { name: "Apr", loans: 15 },
+    { name: "May", loans: 22 },
+    { name: "Jun", loans: 30 },
+  ];
+
+  const borrowerProgress = [
+    { name: "Michael Lee", amount: "$120,000", progress: 75, status: "On Track" },
+    { name: "Emma Davis", amount: "$85,000", progress: 45, status: "Pending" },
+    { name: "Daniel Carter", amount: "$210,000", progress: 90, status: "Completed" },
+    { name: "Sophia Martinez", amount: "$60,000", progress: 30, status: "Delayed" },
+  ];
+
+  const navItems = [
+    "Overview",
+    "User Management",
+    "System Logs",
+    "Security",
+  ];
+
   return (
     <>
       <LandingNavbar />
@@ -8,19 +76,33 @@ function AdminDashboard() {
       <div style={styles.wrapper}>
         {/* Sidebar */}
         <aside style={styles.sidebar}>
-          <div style={styles.logo}>LoanFlow</div>
+          <div>
+            <div style={styles.logo}>LoanFlow</div>
 
-          <nav style={styles.nav}>
-            <p style={styles.navItemActive}>Overview</p>
-            <p style={styles.navItem}>User Management</p>
-            <p style={styles.navItem}>System Logs</p>
-            <p style={styles.navItem}>Security</p>
-          </nav>
+            <nav style={styles.nav}>
+              {navItems.map((item) => (
+                <p
+                  key={item}
+                  onClick={() => setActive(item)}
+                  style={
+                    active === item
+                      ? styles.navItemActive
+                      : styles.navItem
+                  }
+                >
+                  {item}
+                </p>
+              ))}
+            </nav>
+          </div>
 
-          <p style={styles.logout}>Logout</p>
+          {/* Logout Fixed */}
+          <p style={styles.logout} onClick={handleLogout}>
+            Logout
+          </p>
         </aside>
 
-        {/* Main Content */}
+        {/* Main */}
         <main style={styles.main}>
           <div style={styles.headerRow}>
             <div>
@@ -36,32 +118,45 @@ function AdminDashboard() {
             </div>
           </div>
 
-          {/* Stats Cards */}
+          {/* Stats */}
           <div style={styles.statsGrid}>
-            {[
-              { label: "Total Platform Volume", value: "$12.8M" },
-              { label: "Active Users", value: "2,842" },
-              { label: "System Uptime", value: "99.98%" },
-              { label: "Pending Approvals", value: "24" },
-            ].map((card, i) => (
+            {stats.map((card, i) => (
               <div key={i} style={styles.statCard}>
                 <p style={styles.statLabel}>{card.label}</p>
                 <h3 style={styles.statValue}>{card.value}</h3>
+                <p
+                  style={{
+                    marginTop: 6,
+                    fontSize: 12,
+                    color: card.positive ? "#16a34a" : "#dc2626",
+                  }}
+                >
+                  {card.change}
+                </p>
               </div>
             ))}
           </div>
 
-          {/* Chart + Side Panel */}
+          {/* Chart + Top Users */}
           <div style={styles.middleGrid}>
-            {/* Chart */}
             <div style={styles.chartCard}>
-              <h3>Platform Growth</h3>
-              <div style={styles.fakeChart}>
-                📈 Chart Area (you can connect chart later)
+              <h3>Monthly Loans Issued</h3>
+              <div style={{ width: "100%", height: 250 }}>
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData}>
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar
+                      dataKey="loans"
+                      fill="#2563eb"
+                      radius={[6, 6, 0, 0]}
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Top Users */}
             <div style={styles.sideCard}>
               <h4>Top Users</h4>
               <ul style={styles.userList}>
@@ -72,40 +167,37 @@ function AdminDashboard() {
             </div>
           </div>
 
-          {/* Audit Logs */}
-          <div style={styles.tableCard}>
-            <h3>System Audit Logs</h3>
+          {/* Borrowers Progress */}
+          <div style={styles.progressCard}>
+            <h3>Borrowers Progress</h3>
 
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th>Timestamp</th>
-                  <th>User</th>
-                  <th>Action</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>2 mins ago</td>
-                  <td>Sarah Jenkins</td>
-                  <td>Created Loan Offer</td>
-                  <td>Success</td>
-                </tr>
-                <tr>
-                  <td>15 mins ago</td>
-                  <td>System</td>
-                  <td>Daily Backup Completed</td>
-                  <td>Success</td>
-                </tr>
-                <tr>
-                  <td>42 mins ago</td>
-                  <td>Michael Chen</td>
-                  <td>Failed Login Attempt</td>
-                  <td>Warning</td>
-                </tr>
-              </tbody>
-            </table>
+            <div style={{ marginTop: 16 }}>
+              {borrowerProgress.map((borrower, i) => (
+                <div key={i} style={styles.progressRow}>
+                  <div style={{ width: "20%" }}>{borrower.name}</div>
+                  <div style={{ width: "15%" }}>{borrower.amount}</div>
+
+                  <div style={styles.progressBarWrapper}>
+                    <div
+                      style={{
+                        ...styles.progressBar,
+                        width: `${borrower.progress}%`,
+                        background:
+                          borrower.progress > 80
+                            ? "#16a34a"
+                            : borrower.progress > 50
+                            ? "#2563eb"
+                            : "#dc2626",
+                      }}
+                    />
+                  </div>
+
+                  <div style={{ width: "15%", fontSize: 14 }}>
+                    {borrower.status}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </main>
       </div>
@@ -116,52 +208,55 @@ function AdminDashboard() {
 const styles = {
   wrapper: {
     display: "flex",
-    background: "#f8fafc",
+    background: "#f3f4f6",
     minHeight: "100vh",
   },
 
-  /* Sidebar */
   sidebar: {
     width: 220,
-    background: "white",
-    borderRight: "1px solid #e5e7eb",
+    background: "#2563eb",
     padding: 20,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    color: "white",
   },
 
   logo: {
     fontWeight: "bold",
-    color: "#2563eb",
+    fontSize: 20,
     marginBottom: 20,
   },
 
   nav: {
     display: "flex",
     flexDirection: "column",
-    gap: 12,
+    gap: 14,
   },
 
   navItem: {
-    color: "#374151",
     cursor: "pointer",
     fontSize: 14,
+    opacity: 0.85,
+    padding: "6px 8px",
+    borderRadius: 8,
   },
 
   navItemActive: {
-    color: "#2563eb",
+    background: "rgba(255,255,255,0.2)",
+    padding: "8px 10px",
+    borderRadius: 8,
     fontWeight: 600,
-    fontSize: 14,
-  },
-
-  logout: {
-    color: "#ef4444",
     fontSize: 14,
     cursor: "pointer",
   },
 
-  /* Main */
+  logout: {
+    fontSize: 14,
+    cursor: "pointer",
+    opacity: 0.8,
+  },
+
   main: {
     flex: 1,
     padding: 24,
@@ -172,6 +267,8 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 24,
+    flexWrap: "wrap",
+    gap: 12,
   },
 
   heading: {
@@ -207,7 +304,7 @@ const styles = {
 
   statsGrid: {
     display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
+    gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
     gap: 16,
     marginBottom: 24,
   },
@@ -232,7 +329,6 @@ const styles = {
     display: "grid",
     gridTemplateColumns: "2fr 1fr",
     gap: 16,
-    marginBottom: 24,
   },
 
   chartCard: {
@@ -240,17 +336,6 @@ const styles = {
     padding: 16,
     borderRadius: 12,
     border: "1px solid #e5e7eb",
-  },
-
-  fakeChart: {
-    height: 200,
-    background: "#f1f5f9",
-    borderRadius: 8,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#64748b",
-    marginTop: 12,
   },
 
   sideCard: {
@@ -263,21 +348,36 @@ const styles = {
   userList: {
     marginTop: 10,
     paddingLeft: 16,
-    color: "#374151",
     fontSize: 14,
   },
 
-  tableCard: {
+  progressCard: {
+    marginTop: 24,
     background: "white",
     padding: 16,
     borderRadius: 12,
     border: "1px solid #e5e7eb",
   },
 
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    marginTop: 12,
+  progressRow: {
+    display: "flex",
+    alignItems: "center",
+    gap: 16,
+    marginBottom: 14,
+    fontSize: 14,
+  },
+
+  progressBarWrapper: {
+    flex: 1,
+    background: "#e5e7eb",
+    borderRadius: 20,
+    height: 8,
+    overflow: "hidden",
+  },
+
+  progressBar: {
+    height: "100%",
+    borderRadius: 20,
   },
 };
 

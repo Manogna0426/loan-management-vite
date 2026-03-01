@@ -1,6 +1,14 @@
+import { useNavigate } from "react-router-dom";
 import LandingNavbar from "../components/LandingNavbar.jsx";
 
 function BorrowerDashboard() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
   return (
     <>
       <LandingNavbar />
@@ -8,16 +16,20 @@ function BorrowerDashboard() {
       <div style={styles.wrapper}>
         {/* Sidebar */}
         <aside style={styles.sidebar}>
-          <div style={styles.logo}>LoanFlow</div>
+          <div>
+            <div style={styles.logo}>LoanFlow</div>
 
-          <nav style={styles.nav}>
-            <p style={styles.navActive}>My Loans</p>
-            <p style={styles.navItem}>Apply Now</p>
-            <p style={styles.navItem}>Payments</p>
-            <p style={styles.navItem}>Account</p>
-          </nav>
+            <nav style={styles.nav}>
+              <p style={styles.navActive}>My Loans</p>
+              <p style={styles.navItem}>Apply Now</p>
+              <p style={styles.navItem}>Payments</p>
+              <p style={styles.navItem}>Account</p>
+            </nav>
+          </div>
 
-          <p style={styles.logout}>Logout</p>
+          <p style={styles.logout} onClick={handleLogout}>
+            Logout
+          </p>
         </aside>
 
         {/* Main */}
@@ -129,47 +141,52 @@ function BorrowerDashboard() {
 const styles = {
   wrapper: {
     display: "flex",
-    background: "#f8fafc",
+    background: "#f3f4f6",
     minHeight: "100vh",
   },
 
   sidebar: {
     width: 220,
-    background: "white",
-    borderRight: "1px solid #e5e7eb",
+    background: "#2563eb",
     padding: 20,
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",
+    color: "white",
   },
 
   logo: {
     fontWeight: "bold",
-    color: "#2563eb",
+    fontSize: 20,
+    marginBottom: 20,
   },
 
   nav: {
     display: "flex",
     flexDirection: "column",
-    gap: 12,
+    gap: 14,
   },
 
   navItem: {
-    color: "#374151",
-    fontSize: 14,
     cursor: "pointer",
+    fontSize: 14,
+    opacity: 0.85,
+    padding: "6px 8px",
+    borderRadius: 8,
   },
 
   navActive: {
-    color: "#2563eb",
+    background: "rgba(255,255,255,0.2)",
+    padding: "8px 10px",
+    borderRadius: 8,
     fontWeight: 600,
     fontSize: 14,
   },
 
   logout: {
-    color: "#ef4444",
     fontSize: 14,
     cursor: "pointer",
+    opacity: 0.8,
   },
 
   main: {

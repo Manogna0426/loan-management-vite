@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* Reset + Base */
 
 * {
@@ -50,10 +54,7 @@ h1 {
   color: #111827;
 }
 
-h2 {
-  color: #111827;
-}
-
+h2,
 h3 {
   color: #111827;
 }
@@ -65,7 +66,7 @@ button {
   border: none;
   padding: 0.6em 1.2em;
   font-size: 0.95rem;
-  font-weight: 500;
+  font-weight: a500;
   font-family: inherit;
   background-color: #2563eb;
   color: white;
@@ -86,8 +87,6 @@ button:focus,
 button:focus-visible {
   outline: none;
 }
-
-/* Utility container (optional but useful) */
 
 .container {
   max-width: 1200px;

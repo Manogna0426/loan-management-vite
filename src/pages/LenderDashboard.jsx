@@ -1,250 +1,182 @@
-import LandingNavbar from "../components/LandingNavbar.jsx";
+import { useNavigate } from "react-router-dom";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 
 function LenderDashboard() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
+
+  const chartData = [
+    { name: "Jan", principal: 45, interest: 12 },
+    { name: "Feb", principal: 55, interest: 15 },
+    { name: "Mar", principal: 50, interest: 14 },
+    { name: "Apr", principal: 65, interest: 18 },
+    { name: "May", principal: 60, interest: 19 },
+    { name: "Jun", principal: 75, interest: 22 },
+  ];
+
   return (
-    <>
-      <LandingNavbar />
+    <div className="flex min-h-screen bg-gray-100">
+      {/* Sidebar */}
+      <aside className="w-64 bg-blue-600 text-white p-6 flex flex-col justify-between">
+        <div>
+          <h2 className="text-2xl font-bold mb-10">LoanFlow</h2>
 
-      <div style={styles.wrapper}>
-        {/* Sidebar */}
-        <aside style={styles.sidebar}>
-          <div style={styles.logo}>LoanFlow</div>
-
-          <nav style={styles.nav}>
-            <p style={styles.navActive}>Dashboard</p>
-            <p style={styles.navItem}>Loan Offers</p>
-            <p style={styles.navItem}>Active Loans</p>
-            <p style={styles.navItem}>Analytics</p>
+          <nav className="space-y-4 text-sm">
+            <p className="font-semibold">Dashboard</p>
+            <p className="opacity-80 hover:opacity-100 cursor-pointer">
+              Loan Offers
+            </p>
+            <p className="opacity-80 hover:opacity-100 cursor-pointer">
+              Active Loans
+            </p>
+            <p className="opacity-80 hover:opacity-100 cursor-pointer">
+              Analytics
+            </p>
           </nav>
+        </div>
 
-          <p style={styles.logout}>Logout</p>
-        </aside>
+        {/* Logout Fixed */}
+        <p
+          onClick={handleLogout}
+          className="opacity-80 hover:opacity-100 cursor-pointer text-sm"
+        >
+          Logout
+        </p>
+      </aside>
 
-        {/* Main */}
-        <main style={styles.main}>
-          <h2 style={styles.heading}>Lender Dashboard</h2>
-          <p style={styles.sub}>
-            Manage your loan portfolio and monitor borrower performance.
-          </p>
+      {/* Main */}
+      <main className="flex-1 p-10 space-y-10">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-3xl font-semibold">Lender Dashboard</h1>
 
-          {/* Top stats */}
-          <div style={styles.statsGrid}>
-            {[
-              { label: "Total Deployed", value: "$1,245,000" },
-              { label: "Active Borrowers", value: "142" },
-              { label: "Interest Earned", value: "$84,320" },
-              { label: "Overdue Amount", value: "$12,400" },
-            ].map((item, i) => (
-              <div key={i} style={styles.statCard}>
-                <p style={styles.statLabel}>{item.label}</p>
-                <h3>{item.value}</h3>
-              </div>
-            ))}
+          <div className="space-x-3">
+            <button className="bg-gray-200 text-gray-700 px-4 py-2 rounded-md">
+              Inbox
+            </button>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded-md">
+              New Loan Offer
+            </button>
           </div>
+        </div>
 
-          {/* Chart + tools */}
-          <div style={styles.middleGrid}>
-            <div style={styles.chartCard}>
-              <h3>Portfolio Performance</h3>
-              <div style={styles.fakeChart}>
-                📊 Chart Area (connect later)
-              </div>
+        {/* Stats */}
+        <div className="grid grid-cols-4 gap-6">
+          <StatCard value="$1,245,000" label="Total Deployed" />
+          <StatCard value="142" label="Active Borrowers" />
+          <StatCard value="$84,320" label="Interest Accrued" />
+          <StatCard value="$12,400" label="Overdue Amount" />
+        </div>
+
+        {/* Chart + Tools */}
+        <div className="grid grid-cols-3 gap-6">
+          <div className="col-span-2 bg-white p-6 rounded-xl shadow-sm">
+            <h2 className="text-lg font-semibold mb-6">
+              Portfolio Performance
+            </h2>
+
+            <div className="h-72">
+              <ResponsiveContainer>
+                <LineChart data={chartData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="principal"
+                    stroke="#2563eb"
+                    strokeWidth={2}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="interest"
+                    stroke="#ec4899"
+                    strokeWidth={2}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
+          </div>
 
-            <div style={styles.sideCard}>
-              <h4>Quick Offer Tools</h4>
-              <button style={styles.primaryBtn}>
-                + Create New Loan Offer
-              </button>
+          <div className="bg-white p-6 rounded-xl shadow-sm space-y-5">
+            <h2 className="text-lg font-semibold">Quick Offer Tools</h2>
 
-              <div style={{ marginTop: 12, fontSize: 14 }}>
-                <p>Small Business Plan</p>
-                <p>Personal Micro-Loan</p>
-                <p>Real Estate Bridge</p>
-              </div>
+            <button className="w-full bg-blue-600 text-white py-2 rounded-md">
+              Create New Loan Offer
+            </button>
+
+            <div>
+              <h3 className="font-medium mb-2">Active Templates</h3>
+              <ul className="text-sm text-gray-600 space-y-1">
+                <li>Small Business Flex</li>
+                <li>Personal Micro-Loan</li>
+                <li>Real Estate Bridge</li>
+              </ul>
             </div>
           </div>
+        </div>
 
-          {/* Table */}
-          <div style={styles.tableCard}>
-            <h3>Active Borrowers & Payments</h3>
+        {/* Table */}
+        <div className="bg-white p-6 rounded-xl shadow-sm">
+          <h2 className="text-lg font-semibold mb-6">
+            Active Borrowers & Payments
+          </h2>
 
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th>Borrower</th>
-                  <th>Loan Amount</th>
-                  <th>Progress</th>
-                  <th>Next Payment</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>James Wilson</td>
-                  <td>$25,000</td>
-                  <td>80%</td>
-                  <td>2024-06-15</td>
-                  <td>Current</td>
-                </tr>
-                <tr>
-                  <td>Elena Rodriguez</td>
-                  <td>$15,000</td>
-                  <td>65%</td>
-                  <td>2024-06-20</td>
-                  <td>Current</td>
-                </tr>
-                <tr>
-                  <td>Marcus Chen</td>
-                  <td>$42,000</td>
-                  <td>45%</td>
-                  <td>2024-05-30</td>
-                  <td style={{ color: "red" }}>Late</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </main>
-      </div>
-    </>
+          <table className="w-full text-sm">
+            <thead className="bg-gray-100 text-gray-600">
+              <tr>
+                <th className="text-left p-3">Borrower</th>
+                <th className="text-left p-3">Loan Amount</th>
+                <th className="text-left p-3">Progress</th>
+                <th className="text-left p-3">Next Payment</th>
+                <th className="text-left p-3">Status</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr className="border-t">
+                <td className="p-3">James Wilson</td>
+                <td className="p-3">$25,000</td>
+                <td className="p-3">50%</td>
+                <td className="p-3">2024-06-15</td>
+                <td className="p-3 text-green-600">Current</td>
+              </tr>
+
+              <tr className="border-t">
+                <td className="p-3">Elena Rodriguez</td>
+                <td className="p-3">$15,000</td>
+                <td className="p-3">93%</td>
+                <td className="p-3">2024-06-12</td>
+                <td className="p-3 text-green-600">Current</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
   );
 }
 
-const styles = {
-  wrapper: {
-    display: "flex",
-    background: "#f8fafc",
-    minHeight: "100vh",
-  },
-
-  sidebar: {
-    width: 220,
-    background: "white",
-    borderRight: "1px solid #e5e7eb",
-    padding: 20,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-  },
-
-  logo: {
-    fontWeight: "bold",
-    color: "#2563eb",
-  },
-
-  nav: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 12,
-  },
-
-  navItem: {
-    color: "#374151",
-    fontSize: 14,
-    cursor: "pointer",
-  },
-
-  navActive: {
-    color: "#2563eb",
-    fontWeight: 600,
-    fontSize: 14,
-  },
-
-  logout: {
-    color: "#ef4444",
-    fontSize: 14,
-    cursor: "pointer",
-  },
-
-  main: {
-    flex: 1,
-    padding: 24,
-  },
-
-  heading: {
-    marginBottom: 4,
-  },
-
-  sub: {
-    color: "#6b7280",
-    fontSize: 14,
-    marginBottom: 24,
-  },
-
-  statsGrid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(4, 1fr)",
-    gap: 16,
-    marginBottom: 24,
-  },
-
-  statCard: {
-    background: "white",
-    padding: 16,
-    borderRadius: 12,
-    border: "1px solid #e5e7eb",
-  },
-
-  statLabel: {
-    fontSize: 12,
-    color: "#6b7280",
-  },
-
-  middleGrid: {
-    display: "grid",
-    gridTemplateColumns: "2fr 1fr",
-    gap: 16,
-    marginBottom: 24,
-  },
-
-  chartCard: {
-    background: "white",
-    padding: 16,
-    borderRadius: 12,
-    border: "1px solid #e5e7eb",
-  },
-
-  fakeChart: {
-    height: 220,
-    background: "#f1f5f9",
-    borderRadius: 8,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 12,
-    color: "#64748b",
-  },
-
-  sideCard: {
-    background: "white",
-    padding: 16,
-    borderRadius: 12,
-    border: "1px solid #e5e7eb",
-  },
-
-  primaryBtn: {
-    width: "100%",
-    padding: "10px",
-    background: "#2563eb",
-    color: "white",
-    border: "none",
-    borderRadius: 8,
-    cursor: "pointer",
-    marginTop: 10,
-  },
-
-  tableCard: {
-    background: "white",
-    padding: 16,
-    borderRadius: 12,
-    border: "1px solid #e5e7eb",
-  },
-
-  table: {
-    width: "100%",
-    borderCollapse: "collapse",
-    marginTop: 12,
-  },
-};
+function StatCard({ value, label }) {
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-sm">
+      <h3 className="text-xl font-bold">{value}</h3>
+      <p className="text-sm text-gray-500 mt-1">{label}</p>
+    </div>
+  );
+}
 
 export default LenderDashboard;
